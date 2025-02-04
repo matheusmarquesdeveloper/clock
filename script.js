@@ -1,44 +1,38 @@
-let digitalElement = document.querySelector('.digital');
-let sElement = document.querySelector('.p_s');
-let mElement = document.querySelector('.p_m');
-let hElement = document.querySelector('.p_h');
+const digitalElement = document.querySelector('.digital');
+const sElement = document.querySelector('.p_s');
+const mElement = document.querySelector('.p_m');
+const hElement = document.querySelector('.p_h');
 
 function updateClock() {
-    let now = new Date();
-    let hour = now.getHours();
-    let minute = now.getMinutes();
-    let second = now.getSeconds();
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const second = now.getSeconds();
 
-    digitalElement.innerHTML = `${fixZero(hour)}:${fixZero(minute)}:${fixZero(second)}`;
+    // Atualiza o relógio digital
+    digitalElement.textContent = `${formatTime(hour)}:${formatTime(minute)}:${formatTime(second)}`;
 
-    let sDeg = ((360 / 60) * second) - 90;
-    let mDeg = ((360 / 60) * minute) - 90;
+    // Calcula os ângulos dos ponteiros
+    const sDeg = (360 / 60) * second - 90;
+    const mDeg = (360 / 60) * minute - 90;
+    const hDeg = calculateHourAngle(hour, minute);
 
+    // Aplica as rotações aos ponteiros
     sElement.style.transform = `rotate(${sDeg}deg)`;
     mElement.style.transform = `rotate(${mDeg}deg)`;
-    hElement.style.transform = `rotate(${quarterHour(hour, minute)}deg)`;
-     
-    function quarterHour(hour, minute) {
-        let hDeg = ((360 / 12) * hour) - 90;
-       
-        let Quarter;
-        if(minute >= 15 && minute < 30) {
-            Quarter = hDeg + 7.5;
-        } else if(minute >= 30 && minute < 45) {
-            Quarter = hDeg + 15;
-        } else if(minute >= 45) {
-            Quarter = hDeg + 22.5;
-        } else {
-            Quarter = hDeg;
-        }
-        return Quarter;
-    };
-    
+    hElement.style.transform = `rotate(${hDeg}deg)`;
 }
 
-function fixZero(time) {
+function formatTime(time) {
     return time < 10 ? `0${time}` : time;
 }
 
+function calculateHourAngle(hour, minute) {
+    const baseAngle = (360 / 12) * hour - 90; // Ângulo base para a hora
+    const minuteOffset = (360 / 12) * (minute / 60); // Ajuste para os minutos
+    return baseAngle + minuteOffset; // Retorna o ângulo ajustado
+}
+
+// Inicia o relógio e atualiza a cada segundo
 setInterval(updateClock, 1000);
-updateClock();
+updateClock(); // Chama imediatamente para evitar delay inicial
